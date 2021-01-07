@@ -19,6 +19,10 @@ class Cli
       Pastel.new
     end
 
+    def clear
+      system"clear"
+    end
+
     def greeting
       puts "          .--.           .---.        .-.
       .---|--|   .-.     | A |  .---. |~|    .--.
@@ -55,7 +59,7 @@ class Cli
     def no_account
       new_account = prompt.yes?("Would you like to create an account?")
       if new_account
-        system("clear")
+        clear
         create_new_account
       else
         puts "Kick rocks"
@@ -63,13 +67,14 @@ class Cli
     end
 
     def create_new_account
+      binding.pry
       puts "Please input your desired username: "
       desired_username = gets.chomp
       verify = prompt.yes?("Are you sure you want #{desired_username} to be your username?")
       if verify
         User.create(username: desired_username)
-        binding.pry
       end
+      main_menu(desired_username)
     end
 
     def user_verification(input)
@@ -84,16 +89,17 @@ class Cli
     end
 
     def main_menu(current_user)
-      binding.pry
-      options = ["Create new note", "Read all previous notes", "Update an existing note", "Delete note"]
+      options = ["Create new note", "Read all notes", "Update an existing note", "Delete note"]
       choice = prompt.select("What you you like to do today?", options)
       if choice == "Create new note"
         create_note(current_user)
+      elsif choice == "Read all notes"
+        read_note(current_user)
       end
     end
 
     def create_note(current_user)
-      system("clear")
+      clear
       puts("Write your note, hit enter when finished")
       new_note = gets.chomp
       verify = prompt.yes?("Would you like to save this note?")
@@ -101,16 +107,23 @@ class Cli
           Note.create(description: new_note, user: current_user)
           anything_else = prompt.yes?("Would you like to do anything else?")
           if anything_else
-            system("clear")
+            clear
             main_menu(current_user)
           else
-            system("clear")
+            clear
             exit
           end
         else
-          system("clear")
+          clear
           create_note(current_user)
         end
+    end
+
+    def read_note(current_user)
+      clear
+     all_notes= current_user.note.map{|key| key[:description]}
+     puts all_notes
+     gets
     end
 
 end
