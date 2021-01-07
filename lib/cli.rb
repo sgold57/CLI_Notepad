@@ -1,4 +1,5 @@
 require 'tty-prompt'
+require "colorize"
 require_relative '../config/environment.rb'
 
 
@@ -10,9 +11,26 @@ class Cli
       TTY::Prompt.new
     end
 
+    def font
+      TTY::Font.new(:doom)
+    end
+
+    def pastel
+      Pastel.new
+    end
 
     def greeting
-      puts "Welcome to our notepad... patent pending"
+      puts "          .--.           .---.        .-.
+      .---|--|   .-.     | A |  .---. |~|    .--.
+   .--|===|Ch|---|_|--.__| S |--|:::| |~|-==-|==|---.
+   |%%|NT2|oc|===| |~~|%%| C |--|   |_|~|CATS|  |___|-.
+   |  |   |ah|===| |==|  | I |  |:::|=| |    |GB|---|=|
+   |  |   |ol|   |_|__|  | I |__|   | | |    |  |___| |
+   |~~|===|--|===|~|~~|%%|~~~|--|:::|=|~|----|==|---|=|
+  ^--^---'--^---^-^--^--^---'--^---^-^-^-==-^--^---^-'
+      ".colorize(:yellow)
+      puts pastel.yellow(font.write ("WELCOME TO NOTEPAD"))
+      gets
       welcome_prompt
     end
 
