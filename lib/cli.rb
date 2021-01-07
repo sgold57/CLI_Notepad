@@ -67,10 +67,15 @@ class Cli
     end
 
     def create_new_account
-      binding.pry
       puts "Please input your desired username: "
       desired_username = gets.chomp
-      verify = prompt.yes?("Are you sure you want #{desired_username} to be your username?")
+      if User.find_by(username:desired_username)
+       #binding.pry
+        puts "Please select another username"
+        create_new_account
+      else
+        verify = prompt.yes?("Are you sure you want #{desired_username} to be your username?")
+      end
       if verify
         User.create(username: desired_username)
       end
@@ -89,12 +94,16 @@ class Cli
     end
 
     def main_menu(current_user)
-      options = ["Create new note", "Read all notes", "Update an existing note", "Delete note"]
+      options = ["Create new note", "Read all notes", "Update existing note", "Delete note"]
       choice = prompt.select("What you you like to do today?", options)
       if choice == "Create new note"
         create_note(current_user)
       elsif choice == "Read all notes"
         read_note(current_user)
+      elsif choice == "Update existing note"
+        update_note(current_user)
+      elsif choice == "Delete note"
+        delete_note(current_user)
       end
     end
 
@@ -119,11 +128,44 @@ class Cli
         end
     end
 
+    def get_all_notes(current_user)
+      current_user.note.map{|key| key[:description]}
+    end
+
+    def get_note_id(current_user)
+      current_user.note.map{|key| key[:id]}
+    end
+
     def read_note(current_user)
       clear
-     all_notes= current_user.note.map{|key| key[:description]}
-     puts all_notes
+      puts get_all_notes(current_user)
      gets
+    end
+
+    def update_note(current_user)
+      clear
+      selected_note = prompt.select("which note do you want to update",get_all_notes(current_user))
+      update_note = Note.find_by(description:selected_note)
+      update_note.description = gets.chomp
+      verify = prompt.yes?("Are you sure you want to update note to #{update_note.description}?")
+      if verify
+        update_note.save
+        puts "Note has been successfully updated"
+      else
+        main_menu(current_user)
+      end
+    end
+
+    def delete_note(current_user)
+      clear
+      selected_note = prompt.select("which note do you want to delete",get_all_notes(current_user))
+      delete_note = Note.find_by(description:selected_note)
+      verify = prompt.yes?("Are you sure you want to delete #{delete_note.description}?")
+      if verify
+        delete_note.destroy
+      else
+        main_menu(current_user)
+      end
     end
 
 end
