@@ -144,7 +144,7 @@ class Cli
 
     def update_note(current_user)
       clear
-      selected_note = prompt.select("which note do you want to update",get_all_notes(current_user))
+      selected_note = prompt.select("which note do you want to update today",get_all_notes(current_user))
       update_note = Note.find_by(description:selected_note)
       update_note.description = gets.chomp
       verify = prompt.yes?("Are you sure you want to update note to #{update_note.description}?")
