@@ -2,6 +2,9 @@
 
 CLI Notepad is a CLI application that allows each user to create their own login, create their own notes, read all previously written notes, update their notes, and also delete their notes.
 
+# Demo Video
+https://www.youtube.com/watch?v=Cu6ZaTjRt5Y&t=2s
+
 # Technologies
 
 - Active Record - Version 6.0
