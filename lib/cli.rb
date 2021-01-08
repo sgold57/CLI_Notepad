@@ -80,11 +80,11 @@ class Cli
         verify = prompt.yes?("Are you sure you want #{desired_username} to be your username?")
       end
       if verify
-        User.create(username: desired_username)
+        new_user = User.create(username: desired_username)
       else
         create_new_account
       end
-      main_menu(desired_username)
+      main_menu(new_user)
     end
 
     def user_verification(input)
