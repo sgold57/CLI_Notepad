@@ -1,71 +1,68 @@
-# Mod 1 ActiveRecord Starter Repo
+# General Info
 
-In `config/database.yml`, you can change the name of the database from `db/cats.sqlite3` to whatever reflects your project. For example: `db/notes.sqlite3`. Doesn't really matter what you call the db. 
+CLI Notepad is a CLI application that allows each user to create their own login, create their own notes, read all previously written notes, update their notes, and also delete their notes.
 
+# Technologies
 
+- Active Record - Version 6.0
+- Colorize - 0.8.1
+- Rake - Version 13.0
+- Ruby - Version 2.6.5
+- Sinatra - Version 2.0
+- Sqlite3 - Version 1.4
+- TTY-Font - Version 0.5.0
+- TTY-Prompt - Version 0.23.0
 
-## ActiveRecord Methods
-These common ActiveRecord methods will help you interact with your database. Please refer to the ActiveRecord
-docs for what they do and how to use them. (If the docs talk about Rails, that is ok! ActiveRecord works very
- similar with or without Rails.)
+# Setup
+
+To clone this GitHub repository (w/ SSH), in your terminal type:
+
 ```
-  .create (.new, .save)
-  .all
-  .count
-  .find
-  .find_by
-  .where
+git clone git@github.com:sgold57/CLI_Notepad.git
 ```
 
-#### Notes
+and then to run the program type:
 
-*Remember*, any model that will have a corresponding table in the database needs to inherit from `ActiveRecord::Base`
-ex:
 ```
-class Cat < ActiveRecord::Base
-  # customer methods defined here
+bundle init
+bundle install
+ruby runner.rb
+```
+
+# Features
+
+- Ability to create a unique user name
+- Create notes associated with the unique user name
+- Read all of user's notes
+- Update any of user's notes
+- Delete any of user's notes
+
+# Code Sample
+```
+def user_verification(input)
+  if User.find_by(username: input)
+   current_user = User.find_by(username: input)
+   puts "Welcome back #{current_user.username}."
+   main_menu(current_user)
+  else
+   puts "That username does not compute."
+   account_login
+  end
 end
 ```
 
-- To view database, you can run `sqlite3 db/cats.db`, then can run `.schema` or `.tables` and can run any SQL commands. (Don't need to do this anymore though! ActiveRecord gives us a schema file!)
+# Status
+Project is functional with option for potential addition of features, as well as potential for cleaning up code.
+
+# Foundational Repo Used 
+https://github.com/DamonLC21/boiler_plate_ar_setup
+
+# Challenges
+We would have liked for the ability for the user to select their desired note to be updated, and that selected string be printed to the terminal with the ability for it to be edited (e.g. changing "Hello Wurld" to "Hello World") without having to retype the entire note. However, it does not appear that the CLI has this functionality. Our program still works with the ability for users to update their notes, but in order to do so, they must type out the whole note.
+
+# Contact
+Program made by [Obinna Nwabia](https://github.com/coremand) and [Sam Gold](https://github.com/sgold57). Please contact if you have any questions or concerns.
 
 
-### Steps to setup Ruby app with activerecord
-(New for ActiveRecord 6.0)
 
 
-## The following steps are already done for you in this boiler plate repo. 
-## The steps below are provided to you as a reference only. 
-## You're not expected to memorize this (please don't).
-
-
-1. In root of project, run `bundle init`
-1. Add gems: 
-  `bundle add activerecord pry sinatra, sinatra-activerecord rake sqlite3 require_all`
-  run `bundle install`
-1. mkdir config and lib 
-1. mkdir lib/models
-1. touch config/environment.rb config/database.yml
-1. Create your model files and models (make sure to have your models inherit from ActiveRecord::Base)
-1. In config/environment.rb:
-```
-  require 'bundler/setup'
-  Bundler.require
-
-  require_all 'lib'
-```
-1. In config/database.yml:
-  ```
-  development:
-    adapter: sqlite3
-    database: db/cats.sqlite3
-  ```
-1. Touch Rakefile - require ‘config/environment.rb’ and require_relative ‘sinatra/activerecord/rake’ 
-1. Run rake -T to make sure we have access to raketasks
-1. Run `rake db:create_migration NAME=create_cats_table` (will create the db folder if it doesn’t already exist) and will add the migration file to db/migration
-1. Write migration file, then run `rake db:migrate`
-1. Then can see schema in file structure, can also drop into sqlite3 cats.db to see the tables and schema, but don’t really need to do that anymore. *Review rollback here*
-1. Create seeds in db/seeds.rb and run `rake db:seed`
-1. Now can put a pry in environment.rb to run <ModelName>.all and see your seeds.
-
-Make sure your models inherit from `ActiveRecord::Base`
