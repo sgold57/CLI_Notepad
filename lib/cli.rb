@@ -39,7 +39,7 @@ class Cli
     |~~|===|--|===|~|~~|%%|~~~|--|:::|=|~|----|==|---|=|
     ^--^---'--^---^-^--^--^---'--^---^-^-^-==-^--^---^-'
       ".colorize(:yellow)
-      puts pastel.yellow(font.write ("WELCOME TO CLI NOTEPAD"))
+      puts pastel.yellow(font.write ("CLI   NOTEPAD"))
     end
 
     def welcome_prompt
