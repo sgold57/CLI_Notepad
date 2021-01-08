@@ -7,35 +7,39 @@ class Cli
   system("clear")
   ActiveRecord::Base.logger = nil
 
-    def prompt
-      TTY::Prompt.new
-    end
+  def prompt
+    TTY::Prompt.new
+  end
 
-    def font
-      TTY::Font.new(:doom)
-    end
+  def font
+    TTY::Font.new(:doom)
+  end
 
-    def pastel
-      Pastel.new
-    end
+  def pastel
+    Pastel.new
+  end
 
-    def clear
-      system"clear"
-    end
+  def clear
+    system"clear"
+    greeting
+  end
 
-    def greeting
-      puts "          .--.           .---.        .-.
-      .---|--|   .-.     | A |  .---. |~|    .--.
-   .--|===|Ch|---|_|--.__| S |--|:::| |~|-==-|==|---.
-   |%%|NT2|oc|===| |~~|%%| C |--|   |_|~|CATS|  |___|-.
-   |  |   |ah|===| |==|  | I |  |:::|=| |    |GB|---|=|
-   |  |   |ol|   |_|__|  | I |__|   | | |    |  |___| |
-   |~~|===|--|===|~|~~|%%|~~~|--|:::|=|~|----|==|---|=|
-  ^--^---'--^---^-^--^--^---'--^---^-^-^-==-^--^---^-'
+  def start
+    greeting
+    welcome_prompt
+  end
+
+  def greeting
+    puts"            .--.          .---.        .-.
+        .---|--|   .-.    | A |  .---. |~|    .--.
+    .--|===|Ch|---|_|--.__| S |--|:::| |~|-==-|==|---.
+    |%%|NT2|oc|===| |~~|%%| C |--|   |_|~|CATS|  |___|-.
+    |  |   |ah|===| |==|  | I |  |:::|=| |    |GB|---|=|
+    |  |   |ol|   |_|__|  | I |__|   | | |    |  |___| |
+    |~~|===|--|===|~|~~|%%|~~~|--|:::|=|~|----|==|---|=|
+    ^--^---'--^---^-^--^--^---'--^---^-^-^-==-^--^---^-'
       ".colorize(:yellow)
-      puts pastel.yellow(font.write ("WELCOME TO NOTEPAD"))
-      gets
-      welcome_prompt
+      puts pastel.yellow(font.write ("WELCOME TO CLI NOTEPAD"))
     end
 
     def welcome_prompt
@@ -70,14 +74,15 @@ class Cli
       puts "Please input your desired username: "
       desired_username = gets.chomp
       if User.find_by(username:desired_username)
-       #binding.pry
-        puts "Please select another username"
+        puts "That username is already taken. Please select another username"
         create_new_account
       else
         verify = prompt.yes?("Are you sure you want #{desired_username} to be your username?")
       end
       if verify
         User.create(username: desired_username)
+      else
+        create_new_account
       end
       main_menu(desired_username)
     end
@@ -114,14 +119,7 @@ class Cli
       verify = prompt.yes?("Would you like to save this note?")
         if verify
           Note.create(description: new_note, user: current_user)
-          anything_else = prompt.yes?("Would you like to do anything else?")
-          if anything_else
-            clear
-            main_menu(current_user)
-          else
-            clear
-            exit
-          end
+          anything_else(current_user)
         else
           clear
           create_note(current_user)
@@ -138,34 +136,59 @@ class Cli
 
     def read_note(current_user)
       clear
-      puts get_all_notes(current_user)
-     gets
+      if current_user.note != []
+        puts get_all_notes(current_user)
+      else 
+        puts "You must write a note first to read it!"
+      end   
+      anything_else(current_user)
     end
 
     def update_note(current_user)
       clear
-      selected_note = prompt.select("which note do you want to update today",get_all_notes(current_user))
-      update_note = Note.find_by(description:selected_note)
-      update_note.description = gets.chomp
-      verify = prompt.yes?("Are you sure you want to update note to #{update_note.description}?")
-      if verify
-        update_note.save
-        puts "Note has been successfully updated"
+      if current_user.note != []
+        selected_note = prompt.select("which note do you want to update today",get_all_notes(current_user))
+        update_note = Note.find_by(description:selected_note)
+        update_note.description = gets.chomp
+        verify = prompt.yes?("Are you sure you want to update note to '#{update_note.description}'?")
+        if verify
+          update_note.save
+          puts "Note has been successfully updated"
+          anything_else(current_user)
+        else
+          update_note(current_user)
+        end
       else
-        main_menu(current_user)
+        puts "You must write a note first to update it!"
+        anything_else(current_user)
       end
     end
 
     def delete_note(current_user)
       clear
-      selected_note = prompt.select("which note do you want to delete",get_all_notes(current_user))
-      delete_note = Note.find_by(description:selected_note)
-      verify = prompt.yes?("Are you sure you want to delete #{delete_note.description}?")
-      if verify
-        delete_note.destroy
+      if current_user.note != []
+        selected_note = prompt.select("Which note do you want to delete", get_all_notes(current_user))
+        delete_note = Note.find_by(description:selected_note)
+        verify = prompt.yes?("Are you sure you want to delete #{delete_note.description}?")
+        if verify
+          delete_note.destroy
+        end
       else
-        main_menu(current_user)
+        puts "You must write a note first to delete it!"
       end
+      anything_else(current_user)
     end
 
+    def anything_else(current_user)
+      current_user.reload
+      if prompt.yes?("Would you like to do anything else?")
+        clear
+        main_menu(current_user)
+      else
+        current_user = nil
+        clear
+        exit
+      end
+    end
 end
+
